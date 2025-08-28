@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+{% block title %}{{ movie.title }} - MovieBooking{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/all_templates.css">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <!-- Movie Poster -->
+    <div class="col-md-4 mb-4">
+      {% if movie.poster %}
+      <img
+        src="{{ movie.poster.url }}"
+        class="img-fluid rounded"
+        alt="{{ movie.title }}"
+      />
+      {% else %}
+      <div
+        class="bg-secondary rounded d-flex align-items-center justify-content-center"
+        style="height: 400px"
+      >
+        <i class="fas fa-film fa-4x text-muted"></i>
+      </div>
+      {% endif %}
+
+      <!-- Trailer Section -->
+      {% if movie.trailer_url %}
+      <div class="mt-3">
+        <h6><i class="fas fa-play-circle me-2"></i>Trailer</h6>
+        <div class="ratio ratio-16x9">
+          <iframe
+            src="{{ movie.get_trailer_embed_url }}"
+            title="{{ movie.title }} Trailer"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          >
+          </iframe>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Movie Info -->
+    <div class="col-md-8">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h1 class="mb-0">{{ movie.title }}</h1>
+        {% if movie.is_hot %}
+        <span class="badge bg-danger fs-6">
+          <i class="fas fa-fire me-1"></i>Hot
+        </span>
+        {% endif %}
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <p class="text-muted">
+            <i class="fas fa-clock me-2"></i>{{ movie.duration }} phút
+          </p>
+          <p class="text-muted">
+            <i class="fas fa-calendar me-2"></i>{{ movie.release_date|date:"d/m/Y" }}
+          </p>
+          <p class="text-muted">
+            <i class="fas fa-tag me-2"></i>{{ movie.genre.name }}
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p class="text-muted">
+            <i class="fas fa-star text-warning me-2"></i>{{ movie.rating }}/5.0
+          </p>
+          <p class="text-success fw-bold">
+            <i class="fas fa-ticket-alt me-2"></i>{{ movie.price|floatformat:0 }} VNĐ
+          </p>
+          <p class="text-muted">
+            <i class="fas fa-eye me-2"></i>{{ movie.views_count }} lượt xem
+          </p>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <h5>Mô tả</h5>
+        <p>{{ movie.description }}</p>
+      </div>
+
+      <!-- Show Times -->
+      {% if show_times %}
+      <div class="mb-4">
+        <h5><i class="fas fa-calendar-alt me-2"></i>Suất chiếu</h5>
+        <div class="row">
+          {% for show_time in show_times %}
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card">
+              <div class="card-body text-center">
+                <h6 class="card-title">{{ show_time.screen.cinema.name }}</h6>
+                <p class="card-text">
+                  <i class="fas fa-map-marker-alt me-1"></i>{{ show_time.screen.name }}
+                </p>
+                <p class="card-text">
+                  <i class="fas fa-calendar me-1"></i>{{ show_time.date|date:"d/m/Y" }}
+                </p>
+                <p class="card-text">
+                  <i class="fas fa-clock me-1"></i>{{ show_time.time|time:"H:i" }}
+                </p>
+                <p class="text-success fw-bold">
+                  {{ show_time.price|floatformat:0 }} VNĐ
+                </p>
+                <a
+                  href="{% url 'booking_seats' show_time.id %}"
+                  class="btn btn-primary btn-sm"
+                >
+                  <i class="fas fa-ticket-alt me-1"></i>Đặt vé
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>Chưa có suất chiếu cho phim này.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <h3><i class="fas fa-comments me-2"></i>Đánh giá</h3>
+
+      {% if user.is_authenticated %}
+      <div class="card mb-4">
+        <div class="card-body">
+          {% if user_review %}
+          <h6><i class="fas fa-edit me-2"></i>Cập nhật đánh giá của bạn</h6>
+          {% else %}
+          <h6><i class="fas fa-star me-2"></i>Viết đánh giá</h6>
+          {% endif %}
+          
+          <form method="post" id="reviewForm">
+            {% csrf_token %}
+            
+            <!-- Star Rating -->
+            <div class="mb-3">
+              <label class="form-label">Đánh giá <span class="text-danger">*</span></label>
+              <div class="star-rating">
+                <input type="radio" name="rating" value="5" id="star5" {% if user_review.rating == 5 %}checked{% endif %}>
+                <label for="star5" class="star">★</label>
+                <input type="radio" name="rating" value="4" id="star4" {% if user_review.rating == 4 %}checked{% endif %}>
+                <label for="star4" class="star">★</label>
+                <input type="radio" name="rating" value="3" id="star3" {% if user_review.rating.rating == 3 %}checked{% endif %}>
+                <label for="star3" class="star">★</label>
+                <input type="radio" name="rating" value="2" id="star2" {% if user_review.rating.rating == 2 %}checked{% endif %}>
+                <label for="star2" class="star">★</label>
+                <input type="radio" name="rating" value="1" id="star1" {% if user_review.rating.rating == 1 %}checked{% endif %}>
+                <label for="star1" class="star">★</label>
+              </div>
+              <div class="rating-text mt-2">
+                <span id="ratingText">Chọn số sao để đánh giá</span>
+              </div>
+              {% if form.rating.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.rating.errors %}
+                {{ error }}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            
+            <!-- Comment -->
+            <div class="mb-3">
+              <label for="{{ form.comment.id_for_label }}" class="form-label">Bình luận <span class="text-danger">*</span></label>
+              {{ form.comment }}
+              <div class="form-text">
+                <span id="charCount">0</span>/1000 ký tự (tối thiểu 10 ký tự)
+              </div>
+              {% if form.comment.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.comment.errors %}
+                {{ error }}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+              <i class="fas fa-paper-plane me-1"></i>
+              {% if user_review %}Cập nhật đánh giá{% else %}Gửi đánh giá{% endif %}
+            </button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Vui lòng <a href="{% url 'login' %}" class="alert-link">đăng nhập</a> để viết đánh giá.
+      </div>
+      {% endif %}
+
+      <!-- Reviews List -->
+      {% if reviews %}
+      <div class="row">
+        {% for review in reviews %}
+        <div class="col-md-6 mb-3">
+          <div class="card review-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center">
+                  <div class="avatar me-3">
+                    {% if review.user.profile.avatar %}
+                    <img src="{{ review.user.profile.avatar.url }}" alt="{{ review.user.username }}" class="rounded-circle" width="40" height="40">
+                    {% else %}
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                      <i class="fas fa-user text-white"></i>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div>
+                    <h6 class="mb-0">{{ review.user.get_full_name|default:review.user.username }}</h6>
+                    <small class="text-muted">{{ review.created_at|date:"d/m/Y H:i" }}</small>
+                  </div>
+                </div>
+                <div class="text-warning">
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}
+                      <i class="fas fa-star"></i>
+                    {% else %}
+                      <i class="far fa-star"></i>
+                    {% endif %}
+                  {% endfor %}
+                  <span class="ms-2 text-muted">{{ review.rating }}/5</span>
+                </div>
+              </div>
+              <p class="card-text">{{ review.comment }}</p>
+
+              <!-- Chỉ hiển thị nút xóa cho user đã viết review -->
+              {% if user == review.user %}
+              <div class="text-end">
+                <a href="{% url 'edit_review' review.id %}" class="btn btn-outline-primary btn-sm me-2">
+                  <i class="fas fa-edit me-1"></i>Sửa
+                </a>
+                <form
+                  method="post"
+                  action="{% url 'delete_review' review.id %}"
+                  style="display: inline"
+                >
+                  {% csrf_token %}
+                  <button
+                    type="submit"
+                    class="btn btn-outline-danger btn-sm"
+                    onclick="return confirm('Bạn có chắc muốn xóa bình luận này?')"
+                  >
+                    <i class="fas fa-trash me-1"></i>Xóa
+                  </button>
+                </form>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-4">
+        <i class="fas fa-comment-slash fa-2x text-muted mb-3"></i>
+        <p class="text-muted">Chưa có đánh giá nào cho phim này.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Star Rating CSS -->
+<style>
+.star-rating {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  font-size: 2em;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  cursor: pointer;
+  color: #ddd;
+  transition: color 0.2s ease-in-out;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+  color: #ffc107;
+}
+
+.star-rating input:checked ~ label:hover,
+.star-rating input:checked ~ label:hover ~ label {
+  color: #ffdb4d;
+}
+
+.rating-text {
+  color: #000000;
+  font-style: italic;
+}
+
+.review-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.avatar img {
+  object-fit: cover;
+}
+
+#submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Cập nhật màu chữ cho các phần tử khác */
+.form-label {
+  color: #000000 !important;
+}
+
+.form-text {
+  color: #000000 !important;
+}
+
+.card-text {
+  color: #000000 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #000000 !important;
+}
+
+p {
+  color: #000000 !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.alert-heading {
+  color: #000000 !important;
+}
+</style>
+
+<!-- Star Rating JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ratingInputs = document.querySelectorAll('input[name="rating"]');
+  const ratingText = document.getElementById('ratingText');
+  const commentTextarea = document.querySelector('textarea[name="comment"]');
+  const charCount = document.getElementById('charCount');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  // Rating text updates
+  const ratingTexts = {
+    1: 'Rất tệ',
+    2: 'Tệ',
+    3: 'Bình thường',
+    4: 'Tốt',
+    5: 'Tuyệt vời'
+  };
+  
+  ratingInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      const rating = this.value;
+      ratingText.textContent = ratingTexts[rating];
+      checkFormValidity();
+    });
+  });
+  
+  // Character count
+  if (commentTextarea) {
+    commentTextarea.addEventListener('input', function() {
+      const length = this.value.length;
+      charCount.textContent = length;
+      
+      if (length < 10) {
+        charCount.style.color = '#dc3545';
+      } else {
+        charCount.style.color = '#198754';
+      }
+      
+      checkFormValidity();
+    });
+  }
+  
+  // Check form validity
+  function checkFormValidity() {
+    const rating = document.querySelector('input[name="rating"]:checked');
+    const comment = commentTextarea ? commentTextarea.value.trim() : '';
+    
+    if (rating && comment.length >= 10) {
+      submitBtn.disabled = false;
+    } else {
+      submitBtn.disabled = true;
+    }
+  }
+  
+  // Initial check
+  checkFormValidity();
+});
+</script>
+{% endblock %}

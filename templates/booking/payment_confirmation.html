@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block title %}Xác nhận thanh toán - MovieBooking{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/all_templates.css">
+{% endblock %}
+
+{% block content %}
+<section class="payment-confirmation-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="confirmation-card">
+                      <div class="confirmation-header">
+              <div class="success-icon">
+                {% if payment.payment_status == 'completed' %}
+                <i class="fas fa-check-circle"></i>
+                {% elif payment.payment_status == 'processing' %}
+                <i class="fas fa-clock"></i>
+                {% else %}
+                <i class="fas fa-info-circle"></i>
+                {% endif %}
+              </div>
+              <h2>
+                {% if payment.payment_status == 'completed' %}
+                Thanh toán thành công!
+                {% elif payment.payment_status == 'processing' %}
+                Đang xử lý thanh toán
+                {% else %}
+                Thông tin thanh toán
+                {% endif %}
+              </h2>
+              <p class="mb-0">
+                {% if payment.payment_status == 'completed' %}
+                Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi
+                {% elif payment.payment_status == 'processing' %}
+                Vui lòng chờ xác nhận từ hệ thống
+                {% else %}
+                Vui lòng hoàn tất thanh toán
+                {% endif %}
+              </p>
+            </div>
+          
+          <div class="p-4">
+            <!-- Payment Details -->
+            <div class="payment-details">
+              <h5 class="mb-3"><i class="fas fa-receipt me-2"></i>Chi tiết thanh toán</h5>
+              
+              <div class="detail-item">
+                <span><strong>Mã đặt vé:</strong></span>
+                <span class="fw-bold">#{{ booking.id }}</span>
+              </div>
+              
+              <div class="detail-item">
+                <span><strong>Phim:</strong></span>
+                <span>{{ booking.show_time.movie.title }}</span>
+              </div>
+              
+              <div class="detail-item">
+                <span><strong>Suất chiếu:</strong></span>
+                <span>{{ booking.show_time.date|date:"d/m/Y" }} {{ booking.show_time.time|time:"H:i" }}</span>
+              </div>
+              
+              <div class="detail-item">
+                <span><strong>Ghế:</strong></span>
+                <span>
+                  {% for seat in booking.seats.all %}
+                  <span class="badge bg-primary me-1">{{ seat.seat_number }}</span>
+                  {% endfor %}
+                </span>
+              </div>
+              
+              <div class="detail-item">
+                <span><strong>Số tiền:</strong></span>
+                <span class="fw-bold text-success">{{ payment.amount|floatformat:0 }} VNĐ</span>
+              </div>
+              
+              <div class="detail-item">
+                <span><strong>Phương thức:</strong></span>
+                <span>
+                  {% if payment.payment_method == 'bank_transfer' %}
+                  <i class="fas fa-university me-1"></i>Chuyển khoản ngân hàng
+                  {% elif payment.payment_method == 'cash' %}
+                  <i class="fas fa-money-bill-wave me-1"></i>Tiền mặt
+                  {% elif payment.payment_method == 'momo' %}
+                  <i class="fas fa-mobile-alt me-1"></i>Ví MoMo
+                  {% elif payment.payment_method == 'vnpay' %}
+                  <i class="fas fa-credit-card me-1"></i>VNPay
+                  {% else %}
+                  {{ payment.get_payment_method_display }}
+                  {% endif %}
+                </span>
+              </div>
+              
+              {% if payment.payment_method == 'bank_transfer' and payment.bank_account %}
+              <div class="detail-item">
+                <span><strong>Ngân hàng:</strong></span>
+                <span>{{ payment.bank_account.get_bank_name_display }}</span>
+              </div>
+              <div class="detail-item">
+                <span><strong>Số tài khoản:</strong></span>
+                <span>{{ payment.bank_account.account_number }}</span>
+              </div>
+              {% endif %}
+              
+              {% if payment.payment_method == 'momo' and payment.phone_number %}
+              <div class="detail-item">
+                <span><strong>Số điện thoại MoMo:</strong></span>
+                <span>{{ payment.phone_number }}</span>
+              </div>
+              {% endif %}
+              
+              {% if payment.payment_method == 'vnpay' and payment.card_number %}
+              <div class="detail-item">
+                <span><strong>Số thẻ VNPay:</strong></span>
+                <span>{{ payment.card_number }}</span>
+              </div>
+              <div class="detail-item">
+                <span><strong>Chủ thẻ:</strong></span>
+                <span>{{ payment.card_holder }}</span>
+              </div>
+              {% endif %}
+              
+              <div class="detail-item">
+                <span><strong>Trạng thái:</strong></span>
+                <span>
+                  {% if payment.payment_status == 'pending' %}
+                  <span class="status-badge status-pending">Chờ thanh toán</span>
+                  {% elif payment.payment_status == 'processing' %}
+                  <span class="status-badge status-processing">Đang xử lý</span>
+                  {% elif payment.payment_status == 'completed' %}
+                  <span class="status-badge status-completed">Hoàn thành</span>
+                  {% else %}
+                  <span class="status-badge status-pending">{{ payment.get_payment_status_display }}</span>
+                  {% endif %}
+                </span>
+              </div>
+              
+              {% if payment.transaction_id %}
+              <div class="detail-item">
+                <span><strong>Mã giao dịch:</strong></span>
+                <span class="fw-bold">{{ payment.transaction_id }}</span>
+              </div>
+              {% endif %}
+              
+              <div class="detail-item">
+                <span><strong>Ngày thanh toán:</strong></span>
+                <span>{{ payment.created_at|date:"d/m/Y H:i" }}</span>
+              </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="next-steps">
+              <h5 class="mb-3"><i class="fas fa-list-check me-2"></i>Bước tiếp theo</h5>
+              
+              {% if payment.payment_status == 'completed' %}
+              <div class="step-item">
+                <div class="step-icon">
+                  <i class="fas fa-ticket-alt"></i>
+                </div>
+                <div>
+                  <strong>Nhận vé:</strong> Đến rạp trước giờ chiếu 15 phút để nhận vé
+                </div>
+              </div>
+              
+              <div class="step-item">
+                <div class="step-icon">
+                  <i class="fas fa-film"></i>
+                </div>
+                <div>
+                  <strong>Thưởng thức phim:</strong> Vào phòng chiếu và thưởng thức bộ phim
+                </div>
+              </div>
+              {% else %}
+              <div class="step-item">
+                <div class="step-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                  <strong>Chờ xác nhận:</strong> Giao dịch sẽ được xác nhận trong vòng 5-10 phút
+                </div>
+              </div>
+              
+              <div class="step-item">
+                <div class="step-icon">
+                  <i class="fas fa-ticket-alt"></i>
+                </div>
+                <div>
+                  <strong>Nhận vé:</strong> Sau khi xác nhận, đến rạp trước giờ chiếu 15 phút để nhận vé
+                </div>
+              </div>
+              
+              <div class="step-item">
+                <div class="step-icon">
+                  <i class="fas fa-film"></i>
+                </div>
+                <div>
+                  <strong>Thưởng thức phim:</strong> Vào phòng chiếu và thưởng thức bộ phim
+                </div>
+              </div>
+              {% endif %}
+            </div>
+            
+            <!-- QR Code for Ticket -->
+            <div class="qr-code-section">
+              <h5 class="mb-3"><i class="fas fa-qrcode me-2"></i>Mã QR vé</h5>
+              <div class="qr-code">
+                <i class="fas fa-qrcode"></i>
+              </div>
+              <p class="text-muted">Hiển thị mã QR này tại rạp để nhận vé</p>
+            </div>
+            
+            <!-- Important Information -->
+            <div class="alert alert-info">
+              <h6><i class="fas fa-info-circle me-2"></i>Thông tin quan trọng:</h6>
+              <ul class="mb-0">
+                {% if payment.payment_status == 'completed' %}
+                <li>Vui lòng đến rạp trước giờ chiếu 15 phút</li>
+                <li>Mang theo CMND/CCCD để xác nhận thông tin</li>
+                <li>Vé sẽ bị hủy nếu không đến đúng giờ</li>
+                <li>Liên hệ hotline 1900-xxxx nếu cần hỗ trợ</li>
+                {% else %}
+                <li>Thanh toán đang được xử lý, vui lòng chờ xác nhận</li>
+                <li>Bạn sẽ nhận được thông báo khi thanh toán hoàn tất</li>
+                <li>Vui lòng đến rạp trước giờ chiếu 15 phút sau khi xác nhận</li>
+                <li>Liên hệ hotline 1900-xxxx nếu cần hỗ trợ</li>
+                {% endif %}
+              </ul>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="text-center">
+              <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{% url 'my_bookings' %}" class="btn btn-primary btn-lg">
+                  <i class="fas fa-ticket-alt me-2"></i>Xem vé của tôi
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-outline-primary btn-lg">
+                  <i class="fas fa-home me-2"></i>Về trang chủ
+                </a>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} 

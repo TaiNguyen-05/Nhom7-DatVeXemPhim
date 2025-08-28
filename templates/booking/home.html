@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}Trang chủ - MovieBooking{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4 mb-4">
+          <i class="fas fa-film me-3"></i>ĐẶT VÉ XEM PHIM
+        </h1>
+        <p class="lead mb-5">Khám phá những bộ phim mới nhất và đặt vé dễ dàng</p>
+        
+        <!-- Search Form -->
+        <div class="card bg-dark">
+          <div class="card-body">
+            <form method="get" class="row g-3">
+              <div class="col-md-4">
+                {{ search_form.search }}
+              </div>
+              <div class="col-md-3">
+                {{ search_form.genre }}
+              </div>
+              <div class="col-md-3">
+                {{ search_form.sort_by }}
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fas fa-search me-2"></i>Tìm kiếm
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Phim đang hot -->
+  {% if hot_movies %}
+  <div class="mb-5">
+    <h2 class="mb-4">
+      <i class="fas fa-fire text-danger me-2"></i>Phim đang hot
+    </h2>
+    <div class="row">
+      {% for movie in hot_movies %}
+      <div class="col-md-4 col-lg-2 mb-4">
+        <div class="card h-100">
+          {% if movie.poster %}
+          <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}">
+          {% else %}
+          <div class="bg-secondary movie-poster d-flex align-items-center justify-content-center">
+            <i class="fas fa-film fa-3x text-muted"></i>
+          </div>
+          {% endif %}
+          <div class="card-body">
+            <h6 class="card-title">{{ movie.title }}</h6>
+            <p class="text-muted small">{{ movie.duration }} phút</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="text-warning">
+                <i class="fas fa-star"></i>
+                <small>{{ movie.rating }}/5</small>
+              </div>
+              <span class="text-success fw-bold">{{ movie.price|floatformat:0 }} VNĐ</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="{% url 'movie_booking_info' movie.id %}" class="btn btn-primary btn-sm w-100">
+              <i class="fas fa-ticket-alt me-1"></i>Đặt vé
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Danh sách phim -->
+  <div class="mb-4">
+    <h2 class="mb-4">
+      <i class="fas fa-list me-2"></i>Danh sách phim
+    </h2>
+  </div>
+
+  <div class="row">
+    {% for movie in page_obj %}
+    <div class="col-md-6 col-lg-3 mb-4">
+      <div class="card h-100">
+        {% if movie.poster %}
+        <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}">
+        {% else %}
+        <div class="bg-secondary movie-poster d-flex align-items-center justify-content-center">
+          <i class="fas fa-film fa-3x text-muted"></i>
+        </div>
+        {% endif %}
+        
+        <div class="card-body">
+          <h6 class="card-title">{{ movie.title }}</h6>
+          <p class="text-muted small mb-2">{{ movie.duration }} phút • {{ movie.genre.name }}</p>
+          <p class="card-text small">{{ movie.description|truncatewords:15 }}</p>
+          
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="text-warning">
+              <i class="fas fa-star"></i>
+              <small>{{ movie.rating }}/5</small>
+            </div>
+            <small class="text-muted">
+              <i class="fas fa-eye me-1"></i>{{ movie.views_count }}
+            </small>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-success fw-bold">{{ movie.price|floatformat:0 }} VNĐ</span>
+            {% if movie.is_hot %}
+            <span class="badge bg-danger">
+              <i class="fas fa-fire me-1"></i>Hot
+            </span>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <a href="{% url 'movie_booking_info' movie.id %}" class="btn btn-primary btn-sm w-100">
+            <i class="fas fa-ticket-alt me-1"></i>Đặt vé
+          </a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+      <i class="fas fa-search fa-3x text-muted mb-3"></i>
+      <h4 class="text-muted">Không tìm thấy phim nào</h4>
+      <p class="text-muted">Hãy thử tìm kiếm với từ khóa khác</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.genre %}&genre={{ request.GET.genre }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+      </li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active">
+          <span class="page-link">{{ num }}</span>
+        </li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.genre %}&genre={{ request.GET.genre }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">{{ num }}</a>
+        </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.genre %}&genre={{ request.GET.genre }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock %} 

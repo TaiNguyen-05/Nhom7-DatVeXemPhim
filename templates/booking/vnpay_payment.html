@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Thanh toán VNPay - MovieBooking{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/all_templates.css">
+{% endblock %}
+
+{% block content %}
+<section class="vnpay-payment-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="vnpay-card">
+          <div class="vnpay-header">
+            <div class="vnpay-icon">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <h2>Thanh toán qua VNPay</h2>
+            <p class="mb-0">Nhập thông tin thẻ VNPay để thanh toán</p>
+          </div>
+          
+          <div class="p-4">
+            <!-- Booking Summary -->
+            <div class="booking-summary">
+              <h5 class="mb-3"><i class="fas fa-ticket-alt me-2"></i>Thông tin đặt vé</h5>
+              <div class="summary-item">
+                <span>Phim:</span>
+                <span class="fw-bold">{{ booking.show_time.movie.title }}</span>
+              </div>
+              <div class="summary-item">
+                <span>Suất chiếu:</span>
+                <span>{{ booking.show_time.date|date:"d/m/Y" }} {{ booking.show_time.time|time:"H:i" }}</span>
+              </div>
+              <div class="summary-item">
+                <span>Ghế:</span>
+                <span>
+                  {% for seat in booking.seats.all %}
+                  <span class="badge bg-primary me-1">{{ seat.seat_number }}</span>
+                  {% endfor %}
+                </span>
+              </div>
+              <div class="summary-item summary-total">
+                <span>Tổng tiền:</span>
+                <span class="text-success">{{ booking.total_amount|floatformat:0 }} VNĐ</span>
+              </div>
+            </div>
+            
+            <!-- VNPay Payment Form -->
+            <form method="post">
+              {% csrf_token %}
+              
+              <h5 class="mb-3" style="color: #212529; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.2px;">
+                <i class="fas fa-credit-card me-2"></i>Thông tin thẻ VNPay
+              </h5>
+              
+              <div class="form-group">
+                <label for="{{ form.card_number.id_for_label }}" class="form-label">
+                  {{ form.card_number.label }}
+                </label>
+                {{ form.card_number }}
+                {% if form.card_number.errors %}
+                <div class="alert alert-danger mt-2">
+                  {{ form.card_number.errors }}
+                </div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.card_holder.id_for_label }}" class="form-label">
+                  {{ form.card_holder.label }}
+                </label>
+                {{ form.card_holder }}
+                {% if form.card_holder.errors %}
+                <div class="alert alert-danger mt-2">
+                  {{ form.card_holder.errors }}
+                </div>
+                {% endif %}
+              </div>
+              
+              <div class="alert alert-info">
+                <h6><i class="fas fa-info-circle me-2"></i>Hướng dẫn thanh toán:</h6>
+                <ul class="mb-0">
+                  <li>Nhập số thẻ VNPay hợp lệ</li>
+                  <li>Nhập tên chủ thẻ chính xác</li>
+                  <li>Hệ thống sẽ chuyển hướng đến cổng thanh toán VNPay</li>
+                  <li>Vé sẽ được kích hoạt sau khi thanh toán thành công</li>
+                </ul>
+              </div>
+              
+              <div class="text-center mt-4">
+                <button type="submit" class="btn btn-vnpay btn-lg px-5">
+                  <i class="fas fa-credit-card me-2"></i>Thanh toán qua VNPay
+                </button>
+                <a href="{% url 'payment_method' booking.id %}" class="btn btn-outline-secondary btn-lg px-5 ms-2">
+                  <i class="fas fa-arrow-left me-2"></i>Quay lại
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

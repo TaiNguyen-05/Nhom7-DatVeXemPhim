@@ -1,0 +1,285 @@
+/* ===== MOBILE OPTIMIZATIONS FOR BOOKING ===== */
+
+/* Mobile Layout Class */
+.mobile-layout {
+  padding: 10px 5px;
+}
+
+.mobile-layout .booking-header {
+  padding: 15px 10px;
+  margin-bottom: 15px;
+}
+
+.mobile-layout .seat-selection-area {
+  padding: 15px 10px;
+}
+
+.mobile-layout .legend-section {
+  padding: 15px 10px;
+}
+
+/* Mobile Grid Optimizations */
+@media (max-width: 576px) {
+  .seats-grid {
+    gap: 2px;
+    margin: 10px 0;
+    justify-content: center;
+  }
+  
+  .seat {
+    margin: 1px;
+  }
+  
+  .container-fluid {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  .row {
+    margin-left: -5px;
+    margin-right: -5px;
+  }
+  
+  .col-lg-9, .col-lg-3, .col-md-12, .col-sm-12, .col-12 {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
+/* Ultra Small Mobile */
+@media (max-width: 480px) {
+  .seats-grid {
+    gap: 1px;
+    margin: 8px 0;
+  }
+  
+  .seat {
+    margin: 1px;
+  }
+  
+  .booking-header {
+    padding: 10px;
+  }
+  
+  .seat-selection-area {
+    padding: 10px;
+  }
+  
+  .legend-section {
+    padding: 10px;
+  }
+  
+  .screen {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+  
+  .legend-seat {
+    width: 22px;
+    height: 22px;
+    font-size: 8px;
+  }
+  
+  .legend-item {
+    margin: 5px 0;
+  }
+  
+  .legend-item span {
+    font-size: 0.75rem;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .seat {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  .seat:hover {
+    transform: none;
+  }
+  
+  .seat:active {
+    transform: scale(0.95);
+  }
+  
+  #book-button {
+    min-height: 48px;
+    padding: 12px 24px;
+  }
+  
+  .legend-seat {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .booking-header {
+    padding: 10px;
+  }
+  
+  .seat-selection-area {
+    padding: 10px;
+  }
+  
+  .screen {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+  
+  .seats-grid {
+    gap: 3px;
+    margin: 10px 0;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .seat {
+    border-width: 1px;
+  }
+  
+  .legend-seat {
+    border-width: 1px;
+  }
+  
+  .screen {
+    border-width: 1px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .booking-header,
+  .legend-section,
+  .booking-summary-sidebar {
+    display: none;
+  }
+  
+  .seat-selection-area {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  .seat {
+    border: 1px solid #000;
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .seat {
+    transition: none;
+  }
+  
+  .seat:hover {
+    transform: none;
+  }
+  
+  .seat.selected:hover {
+    transform: none;
+  }
+  
+  #book-button:hover {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .seat.available {
+    background: #00ff00;
+    border-color: #000;
+    color: #000;
+  }
+  
+  .seat.selected {
+    background: #ffff00;
+    border-color: #000;
+    color: #000;
+  }
+  
+  .seat.booked {
+    background: #ff0000;
+    border-color: #000;
+    color: #fff;
+  }
+  
+  .screen {
+    background: #000;
+    border-color: #fff;
+    color: #fff;
+  }
+  
+  .price-highlight {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+  }
+}
+
+/* Focus States for Keyboard Navigation */
+.seat:focus {
+  outline: 3px solid #007bff;
+  outline-offset: 2px;
+}
+
+#book-button:focus {
+  outline: 3px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Loading States */
+.seat.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.seat.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error States */
+.seat.error {
+  background: #dc3545;
+  border-color: #dc3545;
+  color: white;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Success States */
+.seat.success {
+  animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}

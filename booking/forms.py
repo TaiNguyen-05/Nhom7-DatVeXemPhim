@@ -164,3 +164,16 @@ class PaymentMethodForm(forms.Form):
         widget=forms.RadioSelect(attrs={'class': 'payment-method-radio'}),
         label='Phương thức thanh toán'
     )
+class BookingForm(forms.Form):
+    seats = forms.ModelMultipleChoiceField(
+        queryset=Seat.objects.none(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=True,
+        help_text="Chọn ghế bạn muốn đặt"
+    )
+    
+    def __init__(self, *args, **kwargs):
+        show_time = kwargs.pop('show_time', None)
+        super().__init__(*args, **kwargs)
+        if show_time:
+            self.fields['seats'].queryset = Seat.objects.filter(show_time=show_time, status='available')

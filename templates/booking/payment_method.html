@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Chọn phương thức thanh toán - MovieBooking{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/all_templates.css">
+{% endblock %}
+
+{% block content %}
+<section class="payment-method-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="payment-card">
+          <div class="payment-header">
+            <h2><i class="fas fa-credit-card me-2"></i>Chọn phương thức thanh toán</h2>
+            <p class="mb-0">Vui lòng chọn phương thức thanh toán phù hợp</p>
+          </div>
+          
+          <div class="p-4">
+            <!-- Booking Summary -->
+            <div class="booking-summary">
+              <h5 class="mb-3"><i class="fas fa-ticket-alt me-2"></i>Thông tin đặt vé</h5>
+              <div class="summary-item">
+                <span>Phim:</span>
+                <span class="fw-bold">{{ booking.show_time.movie.title }}</span>
+              </div>
+              <div class="summary-item">
+                <span>Suất chiếu:</span>
+                <span>{{ booking.show_time.date|date:"d/m/Y" }} {{ booking.show_time.time|time:"H:i" }}</span>
+              </div>
+              <div class="summary-item">
+                <span>Ghế:</span>
+                <span>
+                  {% for seat in booking.seats.all %}
+                  <span class="badge bg-primary me-1">{{ seat.seat_number }}</span>
+                  {% endfor %}
+                </span>
+              </div>
+              <div class="summary-item summary-total">
+                <span>Tổng tiền:</span>
+                <span class="text-success">{{ booking.total_amount|floatformat:0 }} VNĐ</span>
+              </div>
+            </div>
+            
+            <!-- Payment Methods -->
+            <form method="post">
+              {% csrf_token %}
+                             <h5 class="mb-3" style="color: #212529; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.2px;"><i class="fas fa-credit-card me-2"></i>Phương thức thanh toán</h5>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <input type="radio" name="payment_method" value="bank_transfer" id="bank_transfer" class="payment-method-radio" checked>
+                  <label for="bank_transfer" class="payment-method-label">
+                    <div class="text-center">
+                      <div class="payment-icon text-primary">
+                        <i class="fas fa-university"></i>
+                      </div>
+                      <div class="payment-title">Chuyển khoản ngân hàng</div>
+                      <div class="payment-description">Chuyển khoản trực tiếp</div>
+                    </div>
+                  </label>
+                </div>
+                
+                <div class="col-md-6">
+                  <input type="radio" name="payment_method" value="cash" id="cash" class="payment-method-radio">
+                  <label for="cash" class="payment-method-label">
+                    <div class="text-center">
+                      <div class="payment-icon text-success">
+                        <i class="fas fa-money-bill-wave"></i>
+                      </div>
+                      <div class="payment-title">Tiền mặt</div>
+                      <div class="payment-description">Thanh toán tại rạp</div>
+                    </div>
+                  </label>
+                </div>
+                
+                <div class="col-md-6">
+                  <input type="radio" name="payment_method" value="momo" id="momo" class="payment-method-radio">
+                  <label for="momo" class="payment-method-label">
+                    <div class="text-center">
+                      <div class="payment-icon text-danger">
+                        <i class="fas fa-mobile-alt"></i>
+                      </div>
+                      <div class="payment-title">Ví MoMo</div>
+                      <div class="payment-description">Thanh toán nhanh qua ví điện tử</div>
+                      <small class="text-muted">Nhập số điện thoại MoMo</small>
+                    </div>
+                  </label>
+                </div>
+                
+                <div class="col-md-6">
+                  <input type="radio" name="payment_method" value="vnpay" id="vnpay" class="payment-method-radio">
+                  <label for="vnpay" class="payment-method-label">
+                    <div class="text-center">
+                      <div class="payment-icon text-primary">
+                        <i class="fas fa-credit-card"></i>
+                      </div>
+                      <div class="payment-title">VNPay</div>
+                      <div class="payment-description">Thanh toán bảo mật online</div>
+                      <small class="text-muted">Nhập thông tin thẻ VNPay</small>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success btn-lg px-5">
+                  <i class="fas fa-arrow-right me-2"></i>Tiếp tục thanh toán
+                </button>
+                <a href="{% url 'booking_confirmation' booking.id %}" class="btn btn-outline-secondary btn-lg px-5 ms-2">
+                  <i class="fas fa-arrow-left me-2"></i>Quay lại
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} 

@@ -177,3 +177,74 @@ class BookingForm(forms.Form):
         super().__init__(*args, **kwargs)
         if show_time:
             self.fields['seats'].queryset = Seat.objects.filter(show_time=show_time, status='available')
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.HiddenInput(),  # Sử dụng hidden input để lưu rating
+            'comment': forms.Textarea(attrs={
+                'rows': 4, 
+                'placeholder': 'Viết bình luận của bạn về bộ phim này...',
+                'class': 'form-control',
+                'maxlength': '1000'
+            }),
+        }
+        labels = {
+            'rating': 'Đánh giá',
+            'comment': 'Bình luận'
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comment'].widget.attrs.update({
+            'class': 'form-control',
+            'style': 'resize: vertical;'
+        })
+    
+    def clean_comment(self):
+        comment = self.cleaned_data.get('comment')
+        if comment and len(comment.strip()) < 10:
+            raise forms.ValidationError('Bình luận phải có ít nhất 10 ký tự.')
+        return comment.strip()
+    
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if not rating or rating < 1 or rating > 5:
+            raise forms.ValidationError('Vui lòng chọn đánh giá từ 1-5 sao.')
+        return rating
+class ReviewEditForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.HiddenInput(),  # Sử dụng hidden input để lưu rating
+            'comment': forms.Textarea(attrs={
+                'rows': 4,
+                'class': 'form-control',
+                'maxlength': '1000'
+            }),
+        }
+        labels = {
+            'rating': 'Đánh giá',
+            'comment': 'Bình luận'
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comment'].widget.attrs.update({
+            'class': 'form-control',
+            'style': 'resize: vertical;'
+        })
+    
+    def clean_comment(self):
+        comment = self.cleaned_data.get('comment')
+        if comment and len(comment.strip()) < 10:
+            raise forms.ValidationError('Bình luận phải có ít nhất 10 ký tự.')
+        return comment.strip()
+    
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if not rating or rating < 1 or rating > 5:
+            raise forms.ValidationError('Vui lòng chọn đánh giá từ 1-5 sao.')
+        return rating

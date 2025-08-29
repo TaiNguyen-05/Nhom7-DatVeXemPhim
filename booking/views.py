@@ -37,3 +37,24 @@ def home(request):
             movies = movies.order_by('-price')
     else:
         movies = movies.order_by('-release_date')
+
+         # Phim hot
+    hot_movies = Movie.objects.filter(is_active=True, is_hot=True).order_by('-views_count')[:6]
+    
+    # Phân trang
+    paginator = Paginator(movies, 8)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'search_form': search_form,
+        'genres': Genre.objects.all(),
+        'hot_movies': hot_movies,
+    }
+    return render(request, 'booking/home.html', context)
+
+def movie_detail(request, movie_id):
+    # """Chi tiết phim"""
+    movie = get_object_or_404(Movie, id=movie_id)
+    

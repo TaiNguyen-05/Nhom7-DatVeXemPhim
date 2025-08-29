@@ -140,3 +140,88 @@ class Seat(models.Model):
     
     def __str__(self):
         return f"{self.show_time} - Ghế {self.seat_number}"
+    
+class BankAccount(models.Model):
+    BANK_CHOICES = [
+        ('VCB', 'Vietcombank'),
+        ('TCB', 'Techcombank'),
+        ('BIDV', 'BIDV'),
+        ('ACB', 'ACB'),
+        ('MB', 'MB Bank'),
+        ('VPB', 'VPBank'),
+        ('AGB', 'Agribank'),
+        ('SCB', 'Sacombank'),
+        ('TPB', 'TPBank'),
+        ('VIB', 'VIB'),
+        ('OCB', 'OCB'),
+        ('MSB', 'MSB'),
+        ('HDB', 'HDBank'),
+        ('SHB', 'SHB'),
+        ('STB', 'Sacombank'),
+    ]
+    
+    bank_name = models.CharField(max_length=50, choices=BANK_CHOICES)
+    account_number = models.CharField(max_length=20, unique=True)
+    account_holder = models.CharField(max_length=200)
+    branch = models.CharField(max_length=200, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        verbose_name = "Tài khoản ngân hàng"
+        verbose_name_plural = "Tài khoản ngân hàng"
+        ordering = ['bank_name', 'account_number']
+    
+    def __str__(self):
+        return f"{self.get_bank_name_display()} - {self.account_number}"
+
+class Payment(models.Model):
+    PAYMENT_METHODS = [
+        ('cash', 'Tiền mặt'),
+        ('bank_transfer', 'Chuyển khoản ngân hàng'),
+        ('credit_card', 'Thẻ tín dụng'),
+        ('momo', 'Ví MoMo'),
+        ('zalopay', 'Ví ZaloPay'),
+        ('vnpay', 'VNPay'),
+    ]
+    
+    PAYMENT_STATUS = [
+        ('pending', 'Chờ thanh toán'),
+        ('processing', 'Đang xử lý'),
+        ('completed', 'Hoàn thành'),
+        ('failed', 'Thất bại'),
+        ('cancelled', 'Đã hủy'),
+        ('refunded', 'Đã hoàn tiền'),
+    ]
+    
+    booking = models.OneToOneField('Booking', on_delete=models.CASCADE, related_name='payment')
+    amount = models.DecimalField(max_digits=10, decimal_places=0)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default='cash')
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
+    transaction_id = models.CharField(max_length=100, blank=True, null=True, help_text="Mã giao dịch từ cổng thanh toán")
+    payment_date = models.DateTimeField(blank=True, null=True)
+    
+    # Banking information
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.SET_NULL, blank=True, null=True, help_text="Tài khoản ngân hàng được chọn")
+    sender_account = models.CharField(max_length=20, blank=True, null=True, help_text="Số tài khoản người gửi")
+    sender_name = models.CharField(max_length=200, blank=True, null=True, help_text="Tên người gửi")
+    transfer_content = models.CharField(max_length=200, blank=True, null=True, help_text="Nội dung chuyển khoản")
+    
+    # MoMo payment information
+    phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Số điện thoại MoMo")
+    
+    # VNPay payment information
+    card_number = models.CharField(max_length=20, blank=True, null=True, help_text="Số thẻ VNPay")
+    card_holder = models.CharField(max_length=200, blank=True, null=True, help_text="Tên chủ thẻ VNPay")
+    
+    notes = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Thanh toán"
+        verbose_name_plural = "Thanh toán"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Payment {self.id} - {self.booking.user.username} - {self.amount} VNĐ"

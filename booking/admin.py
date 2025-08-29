@@ -60,3 +60,31 @@ class MovieAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+@admin.register(Cinema)
+class CinemaAdmin(admin.ModelAdmin):
+    list_display = ('name', 'address', 'phone', 'created_at')
+    search_fields = ('name', 'address', 'phone')
+    readonly_fields = ('created_at',)
+
+@admin.register(Screen)
+class ScreenAdmin(admin.ModelAdmin):
+    list_display = ('name', 'cinema', 'capacity', 'created_at')
+    list_filter = ('cinema',)
+    search_fields = ('name', 'cinema__name')
+    readonly_fields = ('created_at',)
+
+@admin.register(ShowTime)
+class ShowTimeAdmin(admin.ModelAdmin):
+    list_display = ('movie', 'screen', 'date', 'time', 'price', 'created_at')
+    list_filter = ('movie', 'screen__cinema', 'date')
+    search_fields = ('movie__title', 'screen__name', 'screen__cinema__name')
+    readonly_fields = ('created_at',)
+    date_hierarchy = 'date'
+
+@admin.register(Seat)
+class SeatAdmin(admin.ModelAdmin):
+    list_display = ('show_time', 'seat_number', 'status', 'created_at')
+    list_filter = ('status', 'show_time__movie', 'show_time__screen__cinema')
+    search_fields = ('seat_number', 'show_time__movie__title')
+    readonly_fields = ('created_at',)

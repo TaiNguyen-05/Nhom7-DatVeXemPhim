@@ -146,4 +146,18 @@ class PaymentAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
- 
+
+@admin.register(BankAccount)
+class BankAccountAdmin(admin.ModelAdmin):
+    list_display = ('bank_name', 'account_number', 'account_holder', 'branch', 'is_active', 'created_at')
+    list_filter = ('bank_name', 'is_active', 'created_at')
+    search_fields = ('account_number', 'account_holder', 'branch')
+    readonly_fields = ('created_at',)
+    list_editable = ('is_active',)
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('user', 'movie', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at', 'movie')
+    search_fields = ('user__username', 'movie__title', 'comment')
+    readonly_fields = ('created_at', 'updated_at') 

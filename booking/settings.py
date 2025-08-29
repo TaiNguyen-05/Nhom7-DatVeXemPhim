@@ -1,4 +1,4 @@
-fi"""
+"""
 Django settings for movie_booking project.
 """
 

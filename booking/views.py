@@ -23,3 +23,17 @@ def home(request):
         
         if genre:
             movies = movies.filter(genre=genre)
+        
+         # Sắp xếp
+        if sort_by == 'latest':
+            movies = movies.order_by('-release_date')
+        elif sort_by == 'rating':
+            movies = movies.order_by('-rating')
+        elif sort_by == 'views':
+            movies = movies.order_by('-views_count')
+        elif sort_by == 'price_low':
+            movies = movies.order_by('price')
+        elif sort_by == 'price_high':
+            movies = movies.order_by('-price')
+    else:
+        movies = movies.order_by('-release_date')

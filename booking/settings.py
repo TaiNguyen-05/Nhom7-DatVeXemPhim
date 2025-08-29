@@ -1,5 +1,5 @@
 """
-Django settings for booking project.
+Django settings for movie_booking project.
 """
 
 from pathlib import Path
@@ -39,7 +39,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'booking.urls'
+ROOT_URLCONF = 'movie_booking.urls'
 
 TEMPLATES = [
     {
@@ -57,7 +57,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'booking.wsgi.application'
+WSGI_APPLICATION = 'movie_booking.wsgi.application'
 
 # Database
 DATABASES = {

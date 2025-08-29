@@ -1,0 +1,734 @@
+{% extends 'base.html' %} {% load youtube_filters %} {% block title %}{{
+movie.title }} - Thông tin và đặt vé{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="/static/css/all_templates.css" />
+<link rel="stylesheet" href="/static/css/booking-extras.css" />
+<style>
+  /* Enhanced Showtime Selection Styles */
+  .booking-section {
+    background: ;
+    padding: 60px 0;
+    border-radius: 20px;
+    margin: 40px 0;
+  }
+
+  .booking-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff0000ff, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 40px;
+  }
+
+  .booking-subtitle {
+    color: #495057; /* Chữ xám đậm để dễ đọc */
+    font-size: 1.1rem;
+    margin-bottom: 50px;
+  }
+
+  /* Enhanced Date Tabs */
+  .date-tabs-container {
+    background: #444;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+  }
+
+  .date-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+
+  .date-tab {
+    background: #3d3d3d;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    text-align: center;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    color: #212529; /* Chữ đen rõ ràng */
+  }
+
+  .date-tab:hover {
+    background: #444;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    color: #212529; /* Giữ màu chữ đen khi hover */
+  }
+
+  .date-tab.active {
+    background: linear-gradient(135deg, #ff0000ff, #6610f2);
+    color: black; /* Chữ trắng khi active */
+    border-color: #ffffff0a;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+  }
+
+  .date-tab .date-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 5px;
+    color: inherit; /* Kế thừa màu từ parent */
+  }
+
+  .date-tab .date-day {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    color: inherit; /* Kế thừa màu từ parent */
+  }
+
+  /* Enhanced Showtime Content */
+  .showtime-content {
+    display: none;
+    animation: fadeInUp 0.5s ease;
+  }
+
+  .showtime-content.active {
+    display: block;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Enhanced Showtime Grid */
+  .showtime-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .showtime-card {
+    background: #333;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .showtime-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ff0000ff, #6610f2);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .showtime-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    border-color: #007bff;
+  }
+
+  .showtime-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .showtime-time {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #007bff; /* Màu xanh dương rõ ràng */
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .showtime-price {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #28a745; /* Màu xanh lá rõ ràng */
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #2a2a2a;
+    border-radius: 8px;
+  }
+
+  .showtime-info {
+    margin-bottom: 20px;
+  }
+
+  .showtime-info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    color: #212529; /* Chữ đen rõ ràng */
+    font-size: 0.9rem;
+  }
+
+  .showtime-info-item i {
+    width: 20px;
+    margin-right: 10px;
+    color: #007bff; /* Màu xanh dương cho icon */
+  }
+
+  .book-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #ff0000ff, #6610f2);
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .book-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .book-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+    color: white;
+    text-decoration: none;
+  }
+
+  .book-button:hover::before {
+    left: 100%;
+  }
+
+  .book-button:active {
+    transform: translateY(0);
+  }
+
+  /* Enhanced No Showtimes Message */
+  .no-showtimes {
+    background: white;
+    border-radius: 15px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  .no-showtimes i {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 20px;
+  }
+
+  .no-showtimes h3 {
+    color: #212529; /* Chữ đen rõ ràng */
+    margin-bottom: 15px;
+  }
+
+  .no-showtimes p {
+    color: #495057; /* Chữ xám đậm để dễ đọc */
+    font-size: 1.1rem;
+  }
+
+  /* Enhanced Movie Info */
+  .movie-info-card {
+
+  .movie-info-card {
+    background: #dc3545;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    border: 2px solid #f8f9fa;
+  }
+
+  .movie-poster-large {
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(212, 57, 57, 0.49);
+    transition: transform 0.3s ease;
+  }
+
+  .movie-poster-large:hover {
+    transform: scale(1.02);
+  }
+
+  .rating-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffc107, #ff8c00);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .movie-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 20px;
+    background: #333;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+  }
+
+  .stat-item:hover {
+    background: #444;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #e50914, #6610f2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #212529; /* Chữ đen rõ ràng */
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    color: #495057; /* Chữ xám đậm để dễ đọc */
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .booking-title {
+      font-size: 2rem;
+    }
+
+    .date-tabs {
+      gap: 8px;
+    }
+
+    .date-tab {
+      min-width: 100px;
+      padding: 12px 15px;
+    }
+
+    .date-tab .date-number {
+      font-size: 1.2rem;
+    }
+
+    .showtime-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .showtime-card {
+      padding: 20px;
+    }
+
+    .showtime-time {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .booking-section {
+      padding: 40px 0;
+      margin: 20px 0;
+    }
+
+    .date-tabs-container {
+      padding: 15px;
+    }
+
+    .date-tab {
+      min-width: 80px;
+      padding: 10px 12px;
+    }
+
+    .date-tab .date-number {
+      font-size: 1rem;
+    }
+
+    .date-tab .date-day {
+      font-size: 0.8rem;
+    }
+  }
+
+  /* Loading Animation */
+  .loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-4">
+        {% if movie.poster %}
+        <img
+          src="{{ movie.poster.url }}"
+          alt="{{ movie.title }}"
+          class="img-fluid movie-poster-large"
+        />
+        {% else %}
+        <div
+          class="movie-poster-large bg-secondary d-flex align-items-center justify-content-center"
+          style="height: 400px"
+        >
+          <i class="fas fa-film fa-4x text-muted"></i>
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-8">
+        <div class="movie-info-card">
+          <h1 class="display-4 mb-3" style="color: #212529">
+            {{ movie.title }}
+          </h1>
+
+          <div class="rating-badge mb-3">
+            <i class="fas fa-star me-2"></i>
+            {{ movie.rating }}/5.0
+          </div>
+
+          <p class="lead mb-4" style="color: #495057">
+            {{ movie.description|default:"Thông tin chi tiết về phim sẽ được cập
+            nhật sớm nhất." }}
+          </p>
+
+          <div class="movie-stats">
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-tag"></i>
+              </div>
+              <div class="stat-value">{{ movie.genre.name }}</div>
+              <div class="stat-label">Thể loại</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-value">{{ movie.duration }}'</div>
+              <div class="stat-label">Thời lượng</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+              <div class="stat-value">
+                {{ movie.release_date|date:"d/m/Y" }}
+              </div>
+              <div class="stat-label">Ngày phát hành</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-eye"></i>
+              </div>
+              <div class="stat-value">{{ movie.views_count }}</div>
+              <div class="stat-label">Lượt xem</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Enhanced Booking Section -->
+<section class="booking-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="text-center booking-title">
+          <i class="fas fa-ticket-alt me-3"></i>
+          Chọn suất chiếu và đặt vé
+        </h2>
+
+        <p class="text-center booking-subtitle">
+          Chọn thời gian và rạp chiếu phù hợp với lịch trình của bạn
+        </p>
+
+        {% if show_times_by_date %}
+        <!-- Enhanced Date Tabs -->
+        <div class="date-tabs-container">
+          <div class="date-tabs" id="dateTabs">
+            {% for date_key, show_times in show_times_by_date.items %}
+            <div
+              class="date-tab {% if forloop.first %}active{% endif %}"
+              data-date="{{ date_key }}"
+            >
+              <div class="date-number">{{ show_times.0.date|date:"d" }}</div>
+              <div class="date-day">{{ show_times.0.date|date:"m/Y" }}</div>
+              <div class="date-day">{{ show_times.0.date|date:"l" }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Enhanced Showtimes -->
+        {% for date_key, show_times in show_times_by_date.items %}
+        <div
+          class="showtime-content {% if forloop.first %}active{% endif %}"
+          id="showtime-{{ date_key }}"
+        >
+          <div class="showtime-grid">
+            {% for show_time in show_times %}
+            <div class="showtime-card">
+              <div class="showtime-time">{{ show_time.time|time:"H:i" }}</div>
+              <div class="showtime-price">
+                {{ show_time.price|floatformat:0 }} VNĐ
+              </div>
+              <div class="showtime-info">
+                <div class="showtime-info-item">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>{{ show_time.screen.cinema.name }}</span>
+                </div>
+                <div class="showtime-info-item">
+                  <i class="fas fa-door-open"></i>
+                  <span>{{ show_time.screen.name }}</span>
+                </div>
+                <div class="showtime-info-item">
+                  <i class="fas fa-clock"></i>
+                  <span>{{ show_time.movie.duration }} phút</span>
+                </div>
+                <div class="showtime-info-item">
+                  <i class="fas fa-users"></i>
+                  <span>Còn {{ show_time.screen.capacity }} ghế</span>
+                </div>
+              </div>
+              <a
+                href="{% url 'booking_seats' show_time.id %}"
+                class="book-button"
+                onclick="showLoading(this)"
+              >
+                <i class="fas fa-ticket-alt me-2"></i>
+                <span class="button-text">Đặt vé ngay</span>
+                <span class="loading-spinner" style="display: none"></span>
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <div class="no-showtimes">
+          <i class="fas fa-calendar-times"></i>
+          <h3>Chưa có suất chiếu</h3>
+          <p>
+            Hiện tại chưa có suất chiếu nào cho phim này. Vui lòng quay lại sau
+            hoặc liên hệ với chúng tôi để được hỗ trợ!
+          </p>
+          <button
+            class="btn btn-primary btn-lg mt-3"
+            onclick="checkShowtimes()"
+          >
+            <i class="fas fa-sync-alt me-2"></i>Kiểm tra lại
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
+<script>
+  $(document).ready(function () {
+    // Enhanced Date tab switching with smooth animations
+    $(".date-tab").click(function () {
+      const dateKey = $(this).data("date");
+
+      // Update active tab with animation
+      $(".date-tab").removeClass("active");
+      $(this).addClass("active");
+
+      // Update active content with fade effect
+      $(".showtime-content").fadeOut(200).removeClass("active");
+      $("#showtime-" + dateKey)
+        .fadeIn(300)
+        .addClass("active");
+
+      // Smooth scroll to showtimes
+      $("html, body").animate(
+        {
+          scrollTop: $(".showtime-grid").offset().top - 100,
+        },
+        500
+      );
+    });
+
+    // Enhanced hover effects for showtime cards
+    $(".showtime-card").hover(
+      function () {
+        $(this).find(".showtime-time").css("transform", "scale(1.1)");
+      },
+      function () {
+        $(this).find(".showtime-time").css("transform", "scale(1)");
+      }
+    );
+
+    // Add click ripple effect to book buttons
+    $(".book-button").click(function (e) {
+      const button = $(this);
+      const ripple = $('<span class="ripple"></span>');
+
+      const rect = button[0].getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+
+      ripple.css({
+        width: size,
+        height: size,
+        left: x,
+        top: y,
+      });
+
+      button.append(ripple);
+
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+    });
+  });
+
+  // Show loading state when booking
+  function showLoading(button) {
+    const buttonElement = $(button);
+    const buttonText = buttonElement.find(".button-text");
+    const loadingSpinner = buttonElement.find(".loading-spinner");
+
+    buttonText.hide();
+    loadingSpinner.show();
+    buttonElement.prop("disabled", true);
+
+    // Re-enable after a short delay (in case of navigation)
+    setTimeout(() => {
+      buttonText.show();
+      loadingSpinner.hide();
+      buttonElement.prop("disabled", false);
+    }, 3000);
+  }
+
+  // Check showtimes function
+  function checkShowtimes() {
+    const button = event.target;
+    const originalText = button.innerHTML;
+
+    button.innerHTML =
+      '<i class="fas fa-spinner fa-spin me-2"></i>Đang kiểm tra...';
+    button.disabled = true;
+
+    // Simulate checking (replace with actual AJAX call if needed)
+    setTimeout(() => {
+      button.innerHTML = originalText;
+      button.disabled = false;
+
+      // Show notification
+      showNotification("Đã kiểm tra xong. Vẫn chưa có suất chiếu mới.", "info");
+    }, 2000);
+  }
+
+  // Notification system
+  function showNotification(message, type = "info") {
+    const alertClass =
+      type === "error"
+        ? "alert-danger"
+        : type === "warning"
+        ? "alert-warning"
+        : "alert-info";
+    const notification = $(`
+    <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+         style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+      <i class="fas fa-${
+        type === "error"
+          ? "exclamation-triangle"
+          : type === "warning"
+          ? "exclamation-circle"
+          : "info-circle"
+      } me-2"></i>
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  `);
+
+    $("body").append(notification);
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      notification.alert("close");
+    }, 5000);
+  }
+
+  // Add CSS for ripple effect
+  const style = document.createElement("style");
+  style.textContent = `
+  .book-button {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+  }
+  
+  @keyframes ripple-animation {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+`;
+  document.head.appendChild(style);
+</script>
+{% endblock %}

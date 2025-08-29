@@ -248,3 +248,35 @@ class ReviewEditForm(forms.ModelForm):
         if not rating or rating < 1 or rating > 5:
             raise forms.ValidationError('Vui lòng chọn đánh giá từ 1-5 sao.')
         return rating
+class MovieSearchForm(forms.Form):
+    search = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Tìm kiếm phim...',
+            'class': 'form-control'
+        })
+    )
+    genre = forms.ModelChoiceField(
+        queryset=Movie.objects.none(),
+        required=False,
+        empty_label="Tất cả thể loại",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    sort_by = forms.ChoiceField(
+        choices=[
+            ('latest', 'Mới nhất'),
+            ('rating', 'Đánh giá cao'),
+            ('views', 'Xem nhiều'),
+            ('price_low', 'Giá thấp'),
+            ('price_high', 'Giá cao'),
+        ],
+        required=False,
+        initial='latest',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import Genre
+        self.fields['genre'].queryset = Genre.objects.all()

@@ -100,3 +100,80 @@ class UserProfileForm(forms.ModelForm):
             user.save()
             profile.save()
         return profile
+    
+        
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
+class BankTransferForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['bank_account', 'sender_account', 'sender_name', 'transfer_content']
+        widgets = {
+            'bank_account': forms.Select(attrs={
+                'class': 'form-control',
+                'id': 'bank_account'
+            }),
+            'sender_account': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nhập số tài khoản của bạn',
+                'maxlength': '20'
+            }),
+            'sender_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nhập tên chủ tài khoản',
+                'maxlength': '200'
+            }),
+            'transfer_content': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nội dung chuyển khoản (tùy chọn)',
+                'maxlength': '200'
+            }),
+        }
+        labels = {
+            'bank_account': 'Chọn ngân hàng',
+            'sender_account': 'Số tài khoản người gửi',
+            'sender_name': 'Tên người gửi',
+            'transfer_content': 'Nội dung chuyển khoản'
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Chỉ hiển thị các tài khoản ngân hàng đang hoạt động
+        self.fields['bank_account'].queryset = BankAccount.objects.filter(is_active=True)
+        
+        # Tạo nội dung chuyển khoản mặc định
+        if not self.instance.pk:
+            self.fields['transfer_content'].initial = 'Thanh toan ve phim'
+
+class PaymentMethodForm(forms.Form):
+    PAYMENT_CHOICES = [
+        ('cash', 'Tiền mặt'),
+        ('bank_transfer', 'Chuyển khoản ngân hàng'),
+        ('credit_card', 'Thẻ tín dụng'),
+        ('momo', 'Ví MoMo'),
+        ('zalopay', 'Ví ZaloPay'),
+        ('vnpay', 'VNPay'),
+    ]
+    
+    payment_method = forms.ChoiceField(
+        choices=PAYMENT_CHOICES,
+        widget=forms.RadioSelect(attrs={'class': 'payment-method-radio'}),
+        label='Phương thức thanh toán'
+    )
+class BookingForm(forms.Form):
+    seats = forms.ModelMultipleChoiceField(
+        queryset=Seat.objects.none(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=True,
+        help_text="Chọn ghế bạn muốn đặt"
+    )
+    
+    def __init__(self, *args, **kwargs):
+        show_time = kwargs.pop('show_time', None)
+        super().__init__(*args, **kwargs)
+        if show_time:
+            self.fields['seats'].queryset = Seat.objects.filter(show_time=show_time, status='available')

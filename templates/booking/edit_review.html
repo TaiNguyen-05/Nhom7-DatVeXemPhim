@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chỉnh sửa đánh giá - {{ movie.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Chỉnh sửa đánh giá cho "{{ movie.title }}"
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Thông tin phim -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            {% if movie.poster %}
+                                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="img-fluid rounded">
+                            {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-film fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            <h5 class="card-title">{{ movie.title }}</h5>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-clock me-1"></i>{{ movie.duration }} phút
+                                <span class="mx-2">|</span>
+                                <i class="fas fa-calendar me-1"></i>{{ movie.release_date|date:"d/m/Y" }}
+                                <span class="mx-2">|</span>
+                                <i class="fas fa-star me-1 text-warning"></i>{{ movie.rating }}/5
+                            </p>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-tag me-1"></i>{{ movie.genre.name }}
+                            </p>
+                            <p class="mb-0">{{ movie.description|truncatewords:30 }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin đánh giá hiện tại -->
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle me-1"></i>Đánh giá hiện tại của bạn:
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Đánh giá:</strong> 
+                                <span class="text-warning">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    ({{ review.rating }}/5)
+                                </span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Ngày đánh giá:</strong> {{ review.created_at|date:"d/m/Y H:i" }}
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <strong>Bình luận:</strong> {{ review.comment }}
+                        </div>
+                    </div>
+
+                    <!-- Form chỉnh sửa đánh giá -->
+                    <form method="post" id="editReviewForm">
+                        {% csrf_token %}
+                        
+                        <!-- Star Rating -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <strong>Đánh giá mới <span class="text-danger">*</span></strong>
+                            </label>
+                            <div class="star-rating">
+                                <input type="radio" name="rating" value="5" id="star5" {% if review.rating == 5 %}checked{% endif %}>
+                                <label for="star5" class="star">★</label>
+                                <input type="radio" name="rating" value="4" id="star4" {% if review.rating == 4 %}checked{% endif %}>
+                                <label for="star4" class="star">★</label>
+                                <input type="radio" name="rating" value="3" id="star3" {% if review.rating == 3 %}checked{% endif %}>
+                                <label for="star3" class="star">★</label>
+                                <input type="radio" name="rating" value="2" id="star2" {% if review.rating == 2 %}checked{% endif %}>
+                                <label for="star2" class="star">★</label>
+                                <input type="radio" name="rating" value="1" id="star1" {% if review.rating == 1 %}checked{% endif %}>
+                                <label for="star1" class="star">★</label>
+                            </div>
+                            <div class="rating-text mt-2">
+                                <span id="ratingText">
+                                    {% if review.rating == 5 %}Tuyệt vời
+                                    {% elif review.rating == 4 %}Tốt
+                                    {% elif review.rating == 3 %}Bình thường
+                                    {% elif review.rating == 2 %}Tệ
+                                    {% else %}Rất tệ
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% if form.rating.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.rating.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.comment.id_for_label }}" class="form-label">
+                                <strong>Bình luận mới <span class="text-danger">*</span></strong>
+                            </label>
+                            {{ form.comment }}
+                            <div class="form-text">
+                                <span id="charCount">{{ review.comment|length }}</span>/1000 ký tự (tối thiểu 10 ký tự)
+                            </div>
+                            {% if form.comment.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.comment.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'movie_detail' movie.id %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-warning" id="submitBtn">
+                                <i class="fas fa-save me-1"></i>Cập nhật đánh giá
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Star Rating CSS -->
+<style>
+.star-rating {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  font-size: 2em;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  cursor: pointer;
+  color: #ddd;
+  transition: color 0.2s ease-in-out;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+  color: #ffc107;
+}
+
+.star-rating input:checked ~ label:hover,
+.star-rating input:checked ~ label:hover ~ label {
+  color: #ffdb4d;
+}
+
+.rating-text {
+  color: #000000;
+  font-style: italic;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%) !important;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.btn {
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+    border: none;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+    color: #212529;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    border: none;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+}
+
+/* Cập nhật màu chữ cho các phần tử khác */
+.form-label {
+    color: #000000 !important;
+}
+
+.form-text {
+    color: #000000 !important;
+}
+
+.card-title {
+    color: #000000 !important;
+}
+
+.card-text {
+    color: #000000 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #000000 !important;
+}
+
+p {
+    color: #000000 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.alert-heading {
+    color: #000000 !important;
+}
+
+strong {
+    color: #000000 !important;
+}
+</style>
+
+<!-- Star Rating JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ratingInputs = document.querySelectorAll('input[name="rating"]');
+  const ratingText = document.getElementById('ratingText');
+  const commentTextarea = document.querySelector('textarea[name="comment"]');
+  const charCount = document.getElementById('charCount');
+  
+  // Rating text updates
+  const ratingTexts = {
+    1: 'Rất tệ',
+    2: 'Tệ',
+    3: 'Bình thường',
+    4: 'Tốt',
+    5: 'Tuyệt vời'
+  };
+  
+  ratingInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      const rating = this.value;
+      ratingText.textContent = ratingTexts[rating];
+    });
+  });
+  
+  // Character count
+  if (commentTextarea) {
+    commentTextarea.addEventListener('input', function() {
+      const length = this.value.length;
+      charCount.textContent = length;
+      
+      if (length < 10) {
+        charCount.style.color = '#dc3545';
+      } else {
+        charCount.style.color = '#198754';
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

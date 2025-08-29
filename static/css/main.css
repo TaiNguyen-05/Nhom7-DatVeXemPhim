@@ -1,0 +1,419 @@
+:root {
+  --primary-color: #e50914;
+  --secondary-color: #141414;
+  --accent-color: #f5f5f1;
+}
+
+body {
+  background-color: var(--secondary-color);
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+  background-color: #000000 !important;
+  backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+  color: var(--primary-color) !important;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  color: white !important;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+.dropdown-menu {
+  background-color: #000000 !important;
+  border: 1px solid #333 !important;
+}
+
+.dropdown-item {
+  color: white !important;
+}
+
+.dropdown-item:hover {
+  background-color: #333 !important;
+  color: var(--primary-color) !important;
+}
+
+.navbar-toggler {
+  border-color: white !important;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.75)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+.card {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  color: #ffffff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(229, 9, 20, 0.3);
+}
+
+.card-header {
+  background-color: #333333 !important;
+  border-bottom: 1px solid #444;
+  color: #ffffff !important;
+}
+
+.card-body {
+  background-color: #2a2a2a;
+  color: #ffffff !important;
+}
+
+.container {
+  background-color: #1a1a1a;
+}
+
+.container-fluid {
+  background-color: #1a1a1a;
+}
+
+.row {
+  background-color: transparent;
+}
+
+.col-md-8,
+.col-lg-8,
+.col-md-12,
+.col-lg-12 {
+  background-color: transparent;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: #b2070f;
+  border-color: #b2070f;
+}
+
+.movie-poster {
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.seat {
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+  border: 2px solid #333;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.seat.available {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.seat.booked {
+  background-color: #212529;
+  border-color: #212529;
+  cursor: not-allowed;
+}
+
+.seat.selected {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.hero-section {
+  background: #000000 !important;
+  padding: 100px 0;
+  text-align: center;
+}
+
+.footer {
+  background-color: #0a0a0a;
+  padding: 40px 0;
+  margin-top: 50px;
+  color: white;
+}
+
+/* Đảm bảo tất cả text đều có màu trắng */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+label,
+a {
+  color: white !important;
+}
+
+/* Ngoại lệ cho các button và elements cần màu khác */
+.btn-primary,
+.btn-outline-primary,
+.btn-outline-secondary {
+  color: inherit !important;
+}
+
+.text-muted {
+  color: #cccccc !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+/* Thay đổi màu chữ của tất cả alert thành màu đen */
+.alert {
+  color: #000000 !important;
+}
+
+.alert-success {
+  color: #000000 !important;
+}
+
+.alert-danger {
+  color: #000000 !important;
+}
+
+.alert-warning {
+  color: #000000 !important;
+}
+
+.alert-info {
+  color: #000000 !important;
+}
+
+.alert-primary {
+  color: #000000 !important;
+}
+
+.alert-secondary {
+  color: #000000 !important;
+}
+
+.alert-light {
+  color: #000000 !important;
+}
+
+.alert-dark {
+  color: #000000 !important;
+}
+
+/* Cập nhật màu chữ cho các phần tử chính - loại bỏ universal selector */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #ffffff !important;
+}
+
+p {
+  color: #ffffff !important;
+}
+
+.form-label {
+  color: #ffffff !important;
+}
+
+.form-text {
+  color: #ffffff !important;
+}
+
+.card-title {
+  color: #ffffff !important;
+}
+
+.card-text {
+  color: #ffffff !important;
+}
+
+.alert-heading {
+  color: #ffffff !important;
+}
+
+strong {
+  color: #ffffff !important;
+}
+
+/* Đảm bảo màu chữ cho các phần tử cụ thể */
+.compact-header h6 {
+  color: #ffffff !important;
+}
+
+.compact-header p {
+  color: #ffffff !important;
+}
+
+.compact-header strong {
+  color: #ffffff !important;
+}
+
+.compact-header .text-primary {
+  color: #ffffff !important;
+}
+
+.compact-header .text-danger {
+  color: #dc3545 !important;
+}
+.compact-header .text-info {
+  color: #17a2b8 !important;
+}
+
+.compact-header .text-warning {
+  color: #ffc107 !important;
+}
+
+.compact-header .text-success {
+  color: #28a745 !important;
+}
+
+/* Cập nhật màu nền cho các phần tử cụ thể */
+.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+.bg-light {
+  background-color: #444444 !important;
+}
+
+.bg-white {
+  background-color: #2a2a2a !important;
+}
+
+.text-white-50 {
+  color: #cccccc !important;
+}
+
+/* Cập nhật màu nền cho các phần tử form */
+.form-control {
+  background-color: #444444 !important;
+  border-color: #555 !important;
+  color: #ffffff !important;
+}
+
+.form-control:focus {
+  background-color: #555555 !important;
+  border-color: #007bff !important;
+  color: #ffffff !important;
+}
+
+/* Cập nhật màu nền cho các phần tử khác */
+.badge {
+  background-color: #007bff !important;
+}
+
+.btn-secondary {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.btn-light {
+  background-color: #444444 !important;
+  border-color: #555 !important;
+  color: #ffffff !important;
+}
+
+/* Cập nhật màu nền cho các phần tử compact */
+.compact-header {
+  background: linear-gradient(135deg, #2a2a2a, #3a3a3a) !important;
+}
+
+.compact-summary-sidebar {
+  background-color: #2a2a2a !important;
+}
+
+.compact-summary-sidebar .card {
+  background-color: #333333 !important;
+}
+
+.compact-summary-sidebar .card-header {
+  background-color: #444444 !important;
+}
+
+.compact-summary-sidebar .card-body {
+  background-color: #333333 !important;
+}
+
+/* Cập nhật màu nền cho các phần tử modal */
+.modal-content {
+  background-color: #2a2a2a !important;
+  border: 1px solid #444;
+}
+
+.modal-header {
+  background-color: #333333 !important;
+  border-bottom: 1px solid #444;
+  color: #ffffff !important;
+}
+
+.modal-body {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+.modal-footer {
+  background-color: #333333 !important;
+  border-top: 1px solid #444;
+}
+
+.modal-title {
+  color: #ffffff !important;
+}
+
+/* Cập nhật màu nền cho các phần tử khác */
+.alert {
+  background-color: #2a2a2a !important;
+  border-color: #444 !important;
+  color: #ffffff !important;
+}
+
+.alert-info {
+  background-color: #17a2b8 !important;
+  border-color: #17a2b8 !important;
+}
+
+.alert-success {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+}
+
+.alert-warning {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #000000 !important;
+}
+
+.alert-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}

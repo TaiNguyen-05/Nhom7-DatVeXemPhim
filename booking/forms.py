@@ -301,3 +301,34 @@ class MomoPaymentForm(forms.ModelForm):
         # Tạo nội dung giao dịch mặc định
         if not self.instance.pk:
             self.fields['phone_number'].initial = ''
+class VNPayPaymentForm(forms.ModelForm):
+    card_number = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nhập số thẻ VNPay',
+            'maxlength': '20'
+        }),
+        label='Số thẻ VNPay'
+    )
+    
+    card_holder = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Tên chủ thẻ',
+            'maxlength': '200'
+        }),
+        label='Tên chủ thẻ'
+    )
+    
+    class Meta:
+        model = Payment
+        fields = ['card_number', 'card_holder']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Tạo nội dung giao dịch mặc định
+        if not self.instance.pk:
+            self.fields['card_number'].initial = ''
+            self.fields['card_holder'].initial = '' 

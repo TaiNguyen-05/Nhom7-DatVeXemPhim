@@ -280,3 +280,24 @@ class MovieSearchForm(forms.Form):
         super().__init__(*args, **kwargs)
         from .models import Genre
         self.fields['genre'].queryset = Genre.objects.all()
+
+class MomoPaymentForm(forms.ModelForm):
+    phone_number = forms.CharField(
+        max_length=15,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nhập số điện thoại MoMo',
+            'maxlength': '15'
+        }),
+        label='Số điện thoại MoMo'
+    )
+    
+    class Meta:
+        model = Payment
+        fields = ['phone_number']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Tạo nội dung giao dịch mặc định
+        if not self.instance.pk:
+            self.fields['phone_number'].initial = ''

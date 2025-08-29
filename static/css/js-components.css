@@ -1,0 +1,401 @@
+/* ===== JAVASCRIPT COMPONENTS CSS ===== */
+
+/* ===== NOTIFICATIONS ===== */
+.notification {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  z-index: 9999;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  max-width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.notification-info {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+}
+
+.notification-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.notification-warning {
+  background: linear-gradient(135deg, #ffc107, #fd7e14);
+}
+
+.notification-error {
+  background: linear-gradient(135deg, #dc3545, #e74c3c);
+}
+
+/* ===== LOADING STATES ===== */
+.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.loading::before {
+  content: 'Đang tải...';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  color: white;
+  font-weight: 500;
+}
+
+/* ===== ANIMATIONS ===== */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.animate-on-scroll.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== LAZY LOADING ===== */
+.lazy {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lazy.loaded {
+  opacity: 1;
+}
+
+/* ===== FORM VALIDATION ===== */
+.field-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 5px;
+  animation: slideIn 0.3s ease;
+}
+
+.is-invalid {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.is-valid {
+  border-color: #28a745 !important;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
+
+/* ===== SEAT SELECTION ===== */
+.seat {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.seat:hover:not(.booked) {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.seat.selected {
+  animation: seatSelected 0.4s ease;
+}
+
+@keyframes seatSelected {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1.05); }
+}
+
+/* ===== PAYMENT METHODS ===== */
+.payment-method-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.payment-method-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.payment-method-card.selected {
+  border-color: #e50914;
+  background: linear-gradient(135deg, #2a2a2a, #3d3d3d);
+  transform: scale(1.05);
+}
+
+/* ===== CARD TYPE DISPLAY ===== */
+.card-type-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.card-type-display i {
+  font-size: 2rem;
+}
+
+.card-type-display span {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== VIRTUAL SCROLLING ===== */
+.scroll-sentinel {
+  height: 20px;
+  width: 100%;
+  background: transparent;
+}
+
+/* ===== OFFLINE INDICATOR ===== */
+.offline-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ffc107;
+  color: #000;
+  text-align: center;
+  padding: 8px;
+  font-weight: 600;
+  z-index: 10000;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+}
+
+.offline-indicator.show {
+  transform: translateY(0);
+}
+
+/* ===== PROGRESS BARS ===== */
+.progress-container {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress-bar {
+  height: 6px;
+  background: linear-gradient(90deg, #e50914, #ff6b6b);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ===== TOOLTIPS ===== */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.875rem;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ===== MODALS ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  transform: scale(0.7);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+  transform: scale(1);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .notification {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .modal-content {
+    margin: 20px;
+    padding: 20px;
+  }
+  
+  .card-type-display {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .notification {
+    top: 80px;
+    right: 10px;
+    left: 10px;
+    font-size: 0.875rem;
+    padding: 12px 16px;
+  }
+  
+  .seat {
+    width: 40px;
+    height: 40px;
+    font-size: 10px;
+  }
+  
+  .payment-method-card {
+    padding: 20px;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== DARK MODE SUPPORT ===== */
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background: #0a0a0a;
+    border-color: #444;
+  }
+  
+  .tooltip .tooltiptext {
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+  }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+  .seat {
+    border-width: 3px;
+  }
+  
+  .payment-method-card {
+    border-width: 3px;
+  }
+  
+  .notification {
+    border: 2px solid currentColor;
+  }
+}

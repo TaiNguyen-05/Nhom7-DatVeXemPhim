@@ -225,3 +225,71 @@ class Payment(models.Model):
     
     def __str__(self):
         return f"Payment {self.id} - {self.booking.user.username} - {self.amount} VNĐ"
+
+class Booking(models.Model):
+    PAYMENT_STATUS = [
+        ('pending', 'Chờ thanh toán'),
+        ('processing', 'Đang xử lý thanh toán'),
+        ('paid', 'Đã thanh toán'),
+        ('cancelled', 'Đã hủy'),
+        ('expired', 'Hết hạn'),
+        ('refunded', 'Đã hoàn tiền'),
+    ]
+    
+    BOOKING_STATUS = [
+        ('confirmed', 'Đã xác nhận'),
+        ('pending', 'Chờ xác nhận'),
+        ('cancelled', 'Đã hủy'),
+        ('completed', 'Đã hoàn thành'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    show_time = models.ForeignKey(ShowTime, on_delete=models.CASCADE, related_name='bookings')
+    seats = models.ManyToManyField(Seat, related_name='bookings')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=0)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
+    booking_status = models.CharField(max_length=20, choices=BOOKING_STATUS, default='pending')
+    booking_date = models.DateTimeField(default=timezone.now)
+    expiry_date = models.DateTimeField(blank=True, null=True, help_text="Thời hạn thanh toán")
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Đặt vé"
+        verbose_name_plural = "Đặt vé"
+        ordering = ['-booking_date']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.show_time.movie.title}"
+    
+    def save(self, *args, **kwargs):
+        # Tự động tạo thời hạn thanh toán (24 giờ từ khi đặt vé)
+        if not self.expiry_date:
+            self.expiry_date = timezone.now() + timezone.timedelta(hours=24)
+        super().save(*args, **kwargs)
+    
+    def is_expired(self):
+        """Kiểm tra xem booking có hết hạn chưa"""
+        if self.expiry_date is None:
+            return False
+        return timezone.now() > self.expiry_date
+    
+    def can_cancel(self):
+        """Kiểm tra xem có thể hủy booking không"""
+        return self.booking_status in ['pending', 'confirmed'] and self.payment_status == 'pending'
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comment = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Đánh giá"
+        verbose_name_plural = "Đánh giá"
+        ordering = ['-created_at']
+        unique_together = ['user', 'movie']  # Mỗi user chỉ đánh giá 1 lần cho mỗi phim
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.movie.title} ({self.rating}/5)" 

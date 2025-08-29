@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'booking/base.html' %}
 {% block title %}Trang chủ - MovieBooking{% endblock %}
 
 {% block content %}
@@ -68,7 +68,7 @@
             </div>
           </div>
           <div class="card-footer">
-            <a href="{% url 'movie_booking_info' movie.id %}" class="btn btn-primary btn-sm w-100">
+            <a href="{% url 'booking_info' movie.id %}" class="btn btn-primary btn-sm w-100">
               <i class="fas fa-ticket-alt me-1"></i>Đặt vé
             </a>
           </div>
@@ -124,7 +124,7 @@
         </div>
         
         <div class="card-footer">
-          <a href="{% url 'movie_booking_info' movie.id %}" class="btn btn-primary btn-sm w-100">
+          <a href="{% url 'booking_info' movie.id %}" class="btn btn-primary btn-sm w-100">
             <i class="fas fa-ticket-alt me-1"></i>Đặt vé
           </a>
         </div>

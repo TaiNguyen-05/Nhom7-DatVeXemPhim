@@ -1,4 +1,16 @@
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator
+from django.db.models import Q, Avg, Count
+from django.utils import timezone
+from .models import *
+from .forms import *
+
 # """Kiểm tra user có phải là staff hoặc admin không"""
 def is_staff_or_admin(user):
     return user.is_authenticated and (user.is_staff or hasattr(user, 'profile') and user.profile.user_type in ['staff', 'admin'])
@@ -52,7 +64,7 @@ def home(request):
         'genres': Genre.objects.all(),
         'hot_movies': hot_movies,
     }
-    return render(request, 'booking/home.html', context)
+    return render(request, 'registration/home.html', context)
 
 def movie_detail(request, movie_id):
     # """Chi tiết phim"""
@@ -92,10 +104,10 @@ def movie_detail(request, movie_id):
             return redirect('movie_detail', movie_id=movie.id)
     
     # Form cho đánh giá
-        if user_review:
-            review_form = ReviewEditForm(instance=user_review)
-        else:
-            review_form = ReviewForm()
+    if user_review:
+        review_form = ReviewEditForm(instance=user_review)
+    else:
+        review_form = ReviewForm()
     
     context = {
         'movie': movie,
@@ -107,7 +119,7 @@ def movie_detail(request, movie_id):
     
     return render(request, 'booking/movie_detail.html', context)
 
-def movie_booking_info(request, movie_id):
+def booking_info(request, movie_id):
     # """Trang thông tin phim và đặt vé"""
     movie = get_object_or_404(Movie, id=movie_id)
     
@@ -131,7 +143,7 @@ def movie_booking_info(request, movie_id):
         'show_times_by_date': show_times_by_date,
     }
     
-    return render(request, 'booking/movie_booking_info.html', context)
+    return render(request, 'booking/booking_info.html', context)
 
 @login_required
 def booking_seats(request, show_time_id):
@@ -410,7 +422,7 @@ def register(request):
     else:
         form = UserRegistrationForm()
     
-    return render(request, 'booking/register.html', {'form': form})
+    return render(request, 'registration/register.html', {'form': form})
 
 def custom_login(request):
     # """View login tùy chỉnh"""
@@ -452,7 +464,7 @@ def profile(request):
         'form': form,
         'profile': profile,
     }
-    return render(request, 'booking/profile.html', context)
+    return render(request, 'registration/profile.html', context)
 
 @login_required
 def change_password(request):
@@ -467,7 +479,7 @@ def change_password(request):
     else:
         form = CustomPasswordChangeForm(request.user)
     
-    return render(request, 'booking/change_password.html', {'form': form})
+    return render(request, 'registration/change_password.html', {'form': form})
 
 @login_required
 def add_review(request, movie_id):
@@ -625,7 +637,7 @@ def admin_dashboard(request):
         'hot_movies': hot_movies,
         'recent_users': recent_users,
     }
-    return render(request, 'booking/admin_dashboard.html', context)
+    return render(request, 'registration/admin_dashboard.html', context)
 
 @login_required
 @user_passes_test(is_staff_or_admin)

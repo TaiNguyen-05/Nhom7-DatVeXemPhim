@@ -1,10 +1,12 @@
-from django.urls import path
+from django.urls import path, include
+from django.contrib import admin
 from . import views
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('movie/<int:movie_id>/', views.movie_detail, name='movie_detail'),
-    path('movie/<int:movie_id>/booking/', views.movie_booking_info, name='movie_booking_info'),
+    path('movie/<int:movie_id>/booking/', views.booking_info, name='booking_info'),
     path('booking/<int:show_time_id>/', views.booking_seats, name='booking_seats'),
     path('booking/confirmation/<int:booking_id>/', views.booking_confirmation, name='booking_confirmation'),
     path('payment/method/<int:booking_id>/', views.payment_method, name='payment_method'),

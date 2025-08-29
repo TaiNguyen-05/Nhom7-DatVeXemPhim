@@ -88,3 +88,8 @@ class SeatAdmin(admin.ModelAdmin):
     list_filter = ('status', 'show_time__movie', 'show_time__screen__cinema')
     search_fields = ('seat_number', 'show_time__movie__title')
     readonly_fields = ('created_at',)
+
+class PaymentInline(admin.StackedInline):
+    model = Payment
+    extra = 0
+    readonly_fields = ('created_at', 'updated_at')

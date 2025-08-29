@@ -148,3 +148,19 @@ class BankTransferForm(forms.ModelForm):
         # Tạo nội dung chuyển khoản mặc định
         if not self.instance.pk:
             self.fields['transfer_content'].initial = 'Thanh toan ve phim'
+
+class PaymentMethodForm(forms.Form):
+    PAYMENT_CHOICES = [
+        ('cash', 'Tiền mặt'),
+        ('bank_transfer', 'Chuyển khoản ngân hàng'),
+        ('credit_card', 'Thẻ tín dụng'),
+        ('momo', 'Ví MoMo'),
+        ('zalopay', 'Ví ZaloPay'),
+        ('vnpay', 'VNPay'),
+    ]
+    
+    payment_method = forms.ChoiceField(
+        choices=PAYMENT_CHOICES,
+        widget=forms.RadioSelect(attrs={'class': 'payment-method-radio'}),
+        label='Phương thức thanh toán'
+    )

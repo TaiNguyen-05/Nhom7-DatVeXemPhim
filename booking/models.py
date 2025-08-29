@@ -78,3 +78,29 @@ class Movie(models.Model):
     def has_video(self):
         """Kiểm tra xem phim có video trailer không"""
         return bool(self.video_file or self.trailer_url)
+    
+class Cinema(models.Model):
+    name = models.CharField(max_length=200)
+    address = models.TextField()
+    phone = models.CharField(max_length=20)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        verbose_name = "Rạp chiếu phim"
+        verbose_name_plural = "Rạp chiếu phim"
+    
+    def __str__(self):
+        return self.name
+
+class Screen(models.Model):
+    name = models.CharField(max_length=100)
+    cinema = models.ForeignKey(Cinema, on_delete=models.CASCADE, related_name='screens')
+    capacity = models.IntegerField()
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        verbose_name = "Phòng chiếu"
+        verbose_name_plural = "Phòng chiếu"
+    
+    def __str__(self):
+        return f"{self.cinema.name} - {self.name}"

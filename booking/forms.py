@@ -60,3 +60,11 @@ class UserRegistrationForm(UserCreationForm):
         
         if commit:
             user.save()
+            # Tạo UserProfile
+            UserProfile.objects.create(
+                user=user,
+                phone=self.cleaned_data.get('phone', ''),
+                address=self.cleaned_data.get('address', ''),
+                date_of_birth=self.cleaned_data.get('date_of_birth')
+            )
+        return user
